@@ -1,38 +1,29 @@
-const express = require('express');
-const dotenv = require('dotenv');
+const express = require('express')
+//routes.js をよみこむ
+const routes = require('./routes')
 
+const dotenv = require('dotenv')
 
 dotenv.config()
-const host = process.env.HOST;
-const port = process.env.PORT;
+const host = process.env.HOST
+const port = process.env.PORT
 
 const app = express()
 
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.static(__dirname + '/public'))
 
-app.post('/auth',(request,response)=> {
-    const login_name = request.body.login_name
-    const password = request.body.password
+//レイアウトをつかう
+const layouts = require('express-ejs-layouts')
+app.set('layout', 'layouts/default')
+app.use(layouts)
 
-    let message = "ログインできませんでした。"
-    if(login_name == process.env.LOGIN_NAME 
-        && password == process.env.PASSWORD ){
-            message = 'ログインしました。'
-        }
-    response.send(message)
+//ejs をつかう
+app.set('view engine', 'ejs')
 
-})
-
-app.get('/',(request,response) => {
-    console.log(request.query)
-
-    response.send('Hello YSE !!!!')
-})
-app.get('/profile', (request, response) => {
-    response.send('This is Profile page!!!')
-})
+//routes をつかう
+app.use(routes)
 
 app.listen(port, host, () => {
-        console.log('http://'+ host + ':' + port)
+    console.log('http://' + host + ':' + port)
 })
